@@ -5,6 +5,15 @@ import react from '@vitejs/plugin-react'
 import { defineConfig, type Plugin } from 'vite'
 
 const raiz = path.dirname(fileURLToPath(import.meta.url))
+const clave = path.join(raiz, '.certs', 'dev.key')
+const certificado = path.join(raiz, '.certs', 'dev.crt')
+const httpsLocal =
+  fs.existsSync(clave) && fs.existsSync(certificado)
+    ? {
+        key: fs.readFileSync(clave),
+        cert: fs.readFileSync(certificado),
+      }
+    : undefined
 
 function tipoUsdz(): Plugin {
   return {
@@ -36,9 +45,6 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
-    https: {
-      key: fs.readFileSync(path.join(raiz, '.certs', 'dev.key')),
-      cert: fs.readFileSync(path.join(raiz, '.certs', 'dev.crt')),
-    },
+    https: httpsLocal,
   },
 })
